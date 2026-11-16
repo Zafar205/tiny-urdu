@@ -1,0 +1,3 @@
+transcription: جو لوگ متاہل ہوں  انہیں صبح کے وقت کھانا دے  اور شام کو دسترخان پر بٹھا کر
+phonemes: ɟoː loːɡ mətaːhəl hõː ʊnheːn ʂəbah keː ʋaqt kʰaːnaː deː ɔr ʃaːm koː dastarxaːn pʌr bɪʈʰaː kar
+duration: 5.55 s

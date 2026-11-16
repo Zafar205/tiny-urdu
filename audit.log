@@ -1,0 +1,33 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[train] 250/1500 rows, 66s
+[train] 500/1500 rows, 106s
+[train] 750/1500 rows, 168s
+[train] 1000/1500 rows, 338s
+[train] 1250/1500 rows, 420s
+[train] 1500/1500 rows, 489s
+[train] done 1500 rows in 510s
+[test] 250/300 rows, 69s
+[test] done 300 rows in 92s
+columns: ['audio', 'transcription', 'roman', 'phonemes']
+{'transcription': ' جگہ ہے اور مریم کے بیٹے کے لیے ناپنا ہے', 'roman': ' JGH HE AOR MRYM KE BYTE KE LYE NAPNA HE', 'phonemes': 'ɟˈʌɡˌa hɛ ɔr mˌariˈam keː bˈeːʈeː keː lˈiːeː nˈaːpnˌaː hɛ'}
+{'transcription': ' کہ درحقیقت کھینچنے والا ایک ہی ہے  لیکن وہ کئی ہو کر نظر آتا ہے', 'roman': ' KH DRHKYKT KHYNCHNE OALA AYK HY HE  LYKN OH KYY HO KR NZR AATA HE', 'phonemes': 'ke dˌərəhəqˈiːqət kʰˈeːncənˌeː ʋˈaːlaː ˈeːk hˈiː hɛ lˈeːkɪn woː kˈʌi hˈoː kar naʐˈar ˈaːtaː hɛ'}
+{'transcription': ' اور تجھ جب کے ساتھ حیرت میں نہ ڈالتی  الگرز میں اس کے بعد شیخ شیوخ العالم کی خدمت میں پہنچا', 'roman': ' AOR TJH JB KE SATH HYRT MYN NH DALTY  ALGRZ MYN AS KE BAD SHYKH SHYOKH ALAALM KY KHDMT MYN PHNCHA', 'phonemes': 'ɔr tˈʌɟʰ ɟˈʌb keː sˈaːtʰ hˈeːrət mˈẽ nˈa ɖˈaːltˌiː ˌaləɡˈʌrz mˈẽ ɪs keː bˈaːd ʃˈeːx ʃˈeːʋəx ʊlˈaːləm ki xɪdmˈat mˈẽ pahˈʊncaː'}
+urdu col: transcription | phoneme cols: ['phonemes'] | speaker col: []
+train[:1500]: mean 5.74 med 5.41 min 0.19 max 14.98 >15s 0.000% sr {44100} ch {1}
+test[:300]: mean 5.86 med 5.49 min 2.32 max 13.70 >15s 0.000% sr {44100} ch {1}
+pooled mean 5.76s -> est hours = 92.6 (57,873 rows from README; README says 91.9 h)
+
+[phonemes] top60: [(' ', 26170), ('ː', 21763), ('ˈ', 19590), ('a', 15297), ('e', 7674), ('r', 6239), ('k', 5909), ('h', 5321), ('n', 4776), ('t', 4763), ('i', 4428), ('m', 4307), ('ˌ', 4269), ('ə', 3746), ('o', 3385), ('l', 3383), ('s', 3377), ('ʌ', 3041), ('ɪ', 2659), ('b', 2558), ('d', 2512), ('ʊ', 1784), ('̃', 1719), ('ɟ', 1630), ('ʰ', 1449), ('j', 1365), ('ɛ', 1353), ('p', 1297), ('z', 1186), ('ʃ', 1038), ('q', 1013), ('f', 986), ('ʋ', 940), ('ɔ', 924), ('u', 890), ('ɡ', 883), ('x', 877), ('c', 615), ('ʂ', 567), ('.', 230), ('w', 211), ('ɣ', 164), ('ʈ', 160), ('ʐ', 116), ('ɖ', 49), ('ɐ', 14), ('ɾ', 9), ('ʔ', 6), ('ð', 2), ('ɹ', 1)]
+targets: {'ʈ': 160, 'ɖ': 49, 'ɽ': 0, 'ʰ': 1449, 'ʱ': 0, 'ɣ': 164, 'x': 877, 'q': 1013, 'ʃ': 1038} stress: {'ˈ': 19590, 'ˌ': 4269}
+1038/1800 rows contain ٹ ڈ ڑ ھ; 10 examples:
+   چنانچہ خاجہ زیاد دین برنی رحمت اللہ علیہ کو آپ سے اس درجہ محبت تھی | cənˈaːnca xˈaːɟˌa zjˈaːd dˈeːn bˈʌrnˌiː rɛhmˈat ˈallaːh alˈiːa kˈoː ˌaːp seː ɪs dˈarɟa mʊhˈabːat tʰi
+   اس محل کے گرد آباد کیا  لوگوں نے جب دیکھا کہ بادشاہ کیلوکھری کی سگونت کی طرف راہ کے بھائے  تو انہوں نے اسی مقام میں بڑے بڑے محل اور مکانہ تمیر کرائے | ɪs mˈʌhəl keː ɡˈʌrd aːbˈaːd kjˈaː lˈoːɡõː neː ɟˈʌb dˈeːkʰaː ke bˌaːdʃˈaːh keːlˈoːkʰrˌiː ki səɡˈoːnət ki tarˈaf rˈaːh keː bʰˈaːeː tˈoː ˌʊnhˌoːn neː ˈɪsi məqˈaːm mˈẽ bˈʌr.eː bˈʌr.eː mˈʌhəl ɔr məkˈaːnˌa təmˈiːr kərˈaːeː
+   بعض حضرات کہتے ہیں کہ آپ نے یہ جواب دیا کہ یہ تو ایک حقیقت ہے  کہ تیہ جدعالہ خاتم الانبیاء تھے | bˈaːz hˌəzərˈaːt kˈɛhteː hẽ ke ˌaːp neː jeːh ɟˈaʋaːb dˈiːaː ke jeːh tˈoː ˈeːk həqˈiːqət hɛ ke tˈeːa ɟədˈaːlˌa xˈaːtɪm ʊlˈanbjaː tʰeː
+   تو پھر قرآن کا فیصلہ بھی درست نہیں ہو سکتا  بلکہ جو کچھ بھی یہ اصحابِ رسول صلی اللہ علیہ وآلہ وسلم کرتے ہیں | tˈoː phˈɪr qʊrˈaːn kaː fˈeːʂəla bʰˈiː dˈʊrʊst nahˈiːn hˈoː sˈʌktˌaː bˌalkˈeːh ɟˈoː kʊcʰ bʰˈiː jeːh ˌaʂhˌaːbˈeː rəsˈoːl ʂˈʌli ˈallaːh alˈiːa ʋˈaːlˌa ʋˈʌsəlˌəm kˌarteː hẽ
+   زیادتی ہو جاتی ہے  اور جس نے ڈیر میں رہنے دیا اور بخل کیا | zjˈaːdtˌiː hˈoː ɟˈaːti hɛ ɔr ɟɪs neː ɖˈeːr mˈẽ rˈɛhneː dˈiːaː ɔr bˈʌxəl kjˈaː
+   خداون پالانے پر دھڑال دیا ہے  تاکہ لوگوں کے عمال دکھاتے | xˌʊdaːˈoːn paːlˈaːneː pˈʌr dʰər.ˈaːl dˈiːaː hɛ tˈaːkeːh lˈoːɡõː keː amˈaːl dəkʰˈaːteː
+   کہ وہ جنگیں لڑتی ہیں اس کے نتیجے میں  ملنے والے نفع سے فائدہ اٹھانے والے بھی | ke woː ɟˈʌnɡẽː lˈʌr.tˌiː hẽ ɪs keː nətˈiːɟeː mˈẽ mˈɪlneː ʋˈaːleː nˈʌfaː seː fˈaɪda ʊʈʰˈaːneː ʋˈaːleː bʰˈiː
+   مسلح پر کھڑا کر دیا  مولانا شاہ بدین لخن دہودی رکھتے تھے  اور اس قدر خوش آواز تھے | mˌʊsalˈah pˈʌr kʰˈʌr.aː kar dˈiːaː moːlˈaːnaː ʃˈaːh bədˈiːn lˈʌxən dəhˈoːdi rˈʌkʰtˌeː tʰeː ɔr ɪs qˈadr xˈʊʃ aːʋˈaːz tʰeː
+   تاکہ جو اس کے موافق ہو  تجھے معلوم ہو جائے | tˈaːkeːh ɟˈoː ɪs keː maʋˈaːfəq hˈoː tˌʊɟʰeː mˈaːluːm hˈoː ɟˈaːeː
+   اگر تو ماں سوا اللہ سب سے فارغ ہے  امانِ حق میں ہے  جب تک تو نفی کی جاڑو سے اپنے دل کو صاف نہ کرے گا | aɡˈar tˈoː mˈãː sˈaʋaː ˈallaːh sˈʌb seː fˈaːrɪɣ hɛ ˌamaːnˈeː hˈʌq mˈẽ hɛ ɟˈʌb tˈʌk tˈoː nˈʌfi ki ɟˈaːr.oː seː ˈapnˌeː dˈɪl kˈoː ʂˈaːf nˈa kˈʌreː ɡaː
+saved 10 wavs
