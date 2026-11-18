@@ -15,9 +15,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import frontend  # noqa: E402
-from tiny_voca import text  # noqa: E402
 
-frontend.install(text)
+frontend.install()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
