@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Frontend } from "../lib/urdu";
 
 const ORT = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+const EXAMPLES = ["aap kaise hain?", "mujhe chai pasand hai.", "shukriya, bohat shukriya!", "kal milte hain, khuda hafiz.", "ye ghar bohat baRa hai."];
 type Config = { sample_rate: number; voices: string[]; symbols: string[]; max_tokens: number };
 type Phones = ReturnType<Frontend["phonemize"]>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,13 +32,15 @@ function wav(samples: Float32Array, rate: number): Blob {
 }
 
 export default function Home() {
-  const [text, setText] = useState("aap kaise hain? mujhe chai pasand hai.");
+  const [text, setText] = useState(EXAMPLES[0] + " " + EXAMPLES[1]);
   const [status, setStatus] = useState("Loading model…");
-  const [busy, setBusy] = useState(true);
+  const [ready, setReady] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+  const [voices, setVoices] = useState<string[]>([]);
   const [voice, setVoice] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [url, setUrl] = useState("");
-  const [phones, setPhones] = useState("");
   const model = useRef<{ session: any; config: Config; frontend: Frontend } | null>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   useEffect(() => {
@@ -50,12 +53,14 @@ export default function Home() {
         const config: Config = await (await fetch("/model.json")).json();
         const session = await ort.InferenceSession.create("/model.onnx", { executionProviders: ["wasm"] });
         model.current = { session, config, frontend: new Frontend(config.symbols) };
+        setVoices(config.voices);
         const m2 = config.voices.indexOf("M2");
         setVoice(m2 >= 0 ? m2 : 0);
-        setStatus("Ready");
-        setBusy(false);
+        setStatus("");
+        setReady(true);
       } catch (e) {
-        setStatus("Failed to load: " + (e as Error).message + " (are model.onnx and model.json in web/public?)");
+        setError(true);
+        setStatus("Could not load the model: " + (e as Error).message);
       }
     })();
   }, []);
@@ -75,15 +80,16 @@ export default function Home() {
   }
 
   async function speak() {
-    if (!model.current) return;
+    if (!model.current || busy) return;
     const { session, config } = model.current;
     const ort = window.ort;
     setBusy(true);
-    setStatus("Speaking…");
+    setError(false);
+    setStatus("");
     try {
       const started = performance.now();
       const utterances = text.split(/(?<=[.?!…])\s+/).filter((s) => s.trim()).flatMap(fit);
-      setPhones(utterances.map((u) => u.symbols.join(" ")).join("\n"));
+      if (!utterances.length) throw new Error("nothing to pronounce: type some Roman Urdu");
       const gap = new Float32Array(Math.round(config.sample_rate * 0.15));
       const chunks: Float32Array[] = [];
       for (const u of utterances) {
@@ -104,32 +110,67 @@ export default function Home() {
       if (peak > 0.99) all.forEach((v, i) => (all[i] = (v * 0.99) / peak));
       if (url) URL.revokeObjectURL(url);
       setUrl(URL.createObjectURL(wav(all, config.sample_rate)));
-      setStatus(`Done: ${(all.length / config.sample_rate).toFixed(2)}s of audio in ${((performance.now() - started) / 1000).toFixed(2)}s`);
+      setStatus(`${(all.length / config.sample_rate).toFixed(1)}s of speech in ${((performance.now() - started) / 1000).toFixed(2)}s`);
     } catch (e) {
-      setStatus("Error: " + (e as Error).message);
+      setError(true);
+      setStatus((e as Error).message);
     }
     setBusy(false);
   }
 
   return (
     <main>
-      <h1>Tiny Urdu</h1>
-      <p className="hint">Type Roman Urdu. Capital T, D, R mean retroflex (baRa = big). Runs fully in your browser.</p>
-      <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} />
-      <div className="row">
-        <label>Voice{" "}
-          <select value={voice} onChange={(e) => setVoice(+e.target.value)}>
-            {model.current?.config.voices.map((v, i) => <option key={v} value={i}>{v}</option>)}
-          </select>
-        </label>
-        <label>Speed {speed.toFixed(1)}{" "}
-          <input type="range" min={0.6} max={1.6} step={0.1} value={speed} onChange={(e) => setSpeed(+e.target.value)} />
-        </label>
-        <button onClick={speak} disabled={busy || !text.trim()}>Speak</button>
-      </div>
-      <p className="status">{status}</p>
-      {url && <audio src={url} controls autoPlay />}
-      {phones && <pre>{phones}</pre>}
+      <header>
+        <span className="badge">On-device text-to-speech</span>
+        <h1>Tiny <span>Urdu</span></h1>
+        <p className="urdu" lang="ur" dir="rtl">چھوٹی اردو</p>
+      </header>
+
+      <section className="card">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) speak(); }}
+          placeholder="Kuch likhiye… e.g. aap kaise hain?"
+          rows={4}
+          spellCheck={false}
+        />
+        <div className="chips">
+          {EXAMPLES.map((ex) => <button key={ex} className="chip" onClick={() => setText(ex)}>{ex}</button>)}
+        </div>
+
+        <div className="controls">
+          <div className="field">
+            <span className="label">Voice</span>
+            <div className="segmented">
+              {voices.map((v, i) => (
+                <button key={v} className={i === voice ? "on" : ""} onClick={() => setVoice(i)}>{v}</button>
+              ))}
+            </div>
+          </div>
+          <div className="field grow">
+            <span className="label">Speed <b>{speed.toFixed(1)}×</b></span>
+            <input type="range" min={0.6} max={1.6} step={0.1} value={speed} onChange={(e) => setSpeed(+e.target.value)} />
+          </div>
+          <button className="speak" onClick={speak} disabled={!ready || busy || !text.trim()}>
+            {busy || !ready ? <span className="spinner" /> : <PlayIcon />}
+            {!ready && !error ? "Loading" : busy ? "Speaking" : "Speak"}
+          </button>
+        </div>
+
+        {url && <audio src={url} controls autoPlay />}
+        {status && <p className={error ? "status error" : "status"}>{status}</p>}
+      </section>
+
+      <footer>
+        21 MB model · runs in your browser · built on{" "}
+        <a href="https://github.com/n4ze3m/tiny-voca" target="_blank" rel="noreferrer">tiny-voca</a> ·{" "}
+        <a href="https://github.com/Zafar205/tiny-urdu" target="_blank" rel="noreferrer">source</a>
+      </footer>
     </main>
   );
+}
+
+function PlayIcon() {
+  return <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z" /></svg>;
 }
