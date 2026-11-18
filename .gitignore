@@ -1,0 +1,10 @@
+.venv/
+vendor/
+weights/
+data/
+features/
+annotations/
+runs/
+*.log
+out*.wav
+__pycache__/
