@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { Frontend } from "../lib/urdu";
 
 const ORT = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
-const EXAMPLES = ["aap kaise hain?", "mujhe chai pasand hai.", "shukriya, bohat shukriya!", "kal milte hain, khuda hafiz.", "ye ghar bohat baRa hai."];
 type Config = { sample_rate: number; voices: string[]; symbols: string[]; max_tokens: number };
 type Phones = ReturnType<Frontend["phonemize"]>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,7 +31,7 @@ function wav(samples: Float32Array, rate: number): Blob {
 }
 
 export default function Home() {
-  const [text, setText] = useState(EXAMPLES[0] + " " + EXAMPLES[1]);
+  const [text, setText] = useState("aap kaise hain? mujhe chai pasand hai.");
   const [status, setStatus] = useState("Loading model…");
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -135,9 +134,6 @@ export default function Home() {
           rows={4}
           spellCheck={false}
         />
-        <div className="chips">
-          {EXAMPLES.map((ex) => <button key={ex} className="chip" onClick={() => setText(ex)}>{ex}</button>)}
-        </div>
 
         <div className="controls">
           <div className="field">

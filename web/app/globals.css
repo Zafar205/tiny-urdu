@@ -38,13 +38,6 @@ textarea {
 textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 textarea::placeholder { color: var(--muted); }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px; }
-.chip {
-  font: inherit; font-size: 13.5px; padding: 6px 12px; border-radius: 999px; cursor: pointer;
-  color: var(--fg); background: transparent; border: 1px solid var(--line); transition: all .15s;
-}
-.chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-
 .controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 20px; margin-top: 20px; }
 .field { display: flex; flex-direction: column; gap: 8px; }
 .field.grow { flex: 1; min-width: 160px; }
