@@ -36,8 +36,7 @@ export default function Home() {
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
-  const [voices, setVoices] = useState<string[]>([]);
-  const [voice, setVoice] = useState(0);
+  const [voice, setVoice] = useState(0); // the single Urdu-trained voice (M2)
   const [speed, setSpeed] = useState(1);
   const [url, setUrl] = useState("");
   const model = useRef<{ session: any; config: Config; frontend: Frontend } | null>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -52,7 +51,6 @@ export default function Home() {
         const config: Config = await (await fetch("/model.json")).json();
         const session = await ort.InferenceSession.create("/model.onnx", { executionProviders: ["wasm"], enableCpuMemArena: false, enableMemPattern: false, graphOptimizationLevel: "basic" });
         model.current = { session, config, frontend: new Frontend(config.symbols) };
-        setVoices(config.voices);
         const m2 = config.voices.indexOf("M2");
         setVoice(m2 >= 0 ? m2 : 0);
         setStatus("");
@@ -136,14 +134,6 @@ export default function Home() {
         />
 
         <div className="controls">
-          <div className="field">
-            <span className="label">Voice</span>
-            <div className="segmented">
-              {voices.map((v, i) => (
-                <button key={v} className={i === voice ? "on" : ""} onClick={() => setVoice(i)}>{v}</button>
-              ))}
-            </div>
-          </div>
           <div className="field grow">
             <span className="label">Speed <b>{speed.toFixed(1)}×</b></span>
             <input type="range" min={0.6} max={1.6} step={0.1} value={speed} onChange={(e) => setSpeed(+e.target.value)} />

@@ -49,7 +49,7 @@ Type `aap kaise hain?` and it speaks it in Urdu.
 - **Fine-tuning:** full fine-tune (all 4.5M parameters) on 1,000 clips from [UrduTTS](https://huggingface.co/datasets/kaab4321/UrduTTS), on a free Kaggle T4 GPU
 - **Input:** Roman Urdu text, converted to phonemes by a small rule-based phonemizer
 - **Output:** 24 kHz mono audio
-- **Voices:** `M2` (trained on Urdu, recommended) and `F2` (not trained on Urdu)
+- **Voice:** one male Urdu voice (`M2`)
 
 ## Files
 

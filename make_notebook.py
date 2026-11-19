@@ -7,7 +7,7 @@ def wf(name): return code(f"%%writefile urdu/{name}\n" + (R / "urdu" / name).rea
 cells = [
 md("# tiny-voca -> Roman Urdu (1000 UrduTTS clips)\nKaggle: turn **Internet ON** and pick a **GPU** accelerator. Run top to bottom."),
 code("import torch\nassert torch.cuda.is_available(), 'No GPU: set Settings -> Accelerator -> GPU (before Save Version too)'\n")
-,code("STEPS = 6000      # fine-tune steps\nN_TRAIN = 1000\nN_VAL = 32"),
+,code("STEPS = 25000     # fine-tune steps (~3 h on a T4)\nN_TRAIN = 5000    # ~8 h of audio; whole run ~8-8.5 h\nN_VAL = 64"),
 code("""%%bash
 set -e
 mkdir -p /kaggle/working/tiny-urdu && cd /kaggle/working/tiny-urdu
@@ -63,7 +63,7 @@ start = "--resume runs/urdu2/last.pt" if os.path.exists("runs/urdu2/last.pt") el
 sh(f"python urdu/run.py tiny_voca.train --train annotations-v2/train.jsonl --validation annotations-v2/validation.jsonl "
    f"--output runs/urdu2 {start} --device cuda --steps {STEPS} --max-seconds 86400 --learning-rate 2e-4 --warmup 200 "
    f"--gan-start {STEPS//2} --gan-ramp {STEPS//8} --teacher-hold {STEPS//6} --teacher-ramp {STEPS//3} --teacher-final 0 "
-   f"--save-every 500 --keep-every 2000 --log-every 25 --validation-size {N_VAL}")"""),
+   f"--save-every 1000 --keep-every 5000 --log-every 25 --validation-size {N_VAL}")"""),
 md("## 5. Speak Roman Urdu"),
 code("""import json, subprocess, IPython.display as ipd
 voice = json.loads(open("data/train.jsonl").readline())["speaker"]
