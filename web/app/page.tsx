@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Frontend } from "../lib/urdu";
 
-const ORT = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+const ORT = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/";
 type Config = { sample_rate: number; voices: string[]; symbols: string[]; max_tokens: number };
 type Phones = ReturnType<Frontend["phonemize"]>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,7 +50,7 @@ export default function Home() {
         ort.env.wasm.wasmPaths = ORT;
         ort.env.wasm.numThreads = 1;
         const config: Config = await (await fetch("/model.json")).json();
-        const session = await ort.InferenceSession.create("/model.onnx", { executionProviders: ["wasm"] });
+        const session = await ort.InferenceSession.create("/model.onnx", { executionProviders: ["wasm"], enableCpuMemArena: false, enableMemPattern: false, graphOptimizationLevel: "basic" });
         model.current = { session, config, frontend: new Frontend(config.symbols) };
         setVoices(config.voices);
         const m2 = config.voices.indexOf("M2");
