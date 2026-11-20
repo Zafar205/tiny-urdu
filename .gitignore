@@ -8,3 +8,5 @@ runs/
 *.log
 out*.wav
 __pycache__/
+models/
+tiny-urdu-models.zip

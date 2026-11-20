@@ -129,7 +129,7 @@
  ],
  "max_tokens": 512,
  "max_frames": 3000,
- "step": 6000,
+ "step": 25000,
  "frontend": "tiny-urdu",
  "frontend_fingerprint": "64f5034f3c3f5df340b2bfe86aa130542435bb15cd2dc530d4c30a51d99c3166",
  "inputs": [
