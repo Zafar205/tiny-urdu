@@ -69,6 +69,52 @@ export function romanToIpa(word: string): string {
   return out.join("");
 }
 
+
+// ---- numbers -> spoken Urdu (port of expand_numbers in urdu/frontend.py) ---------------------
+const W = ("sifar ek do teen chaar paanch chhe saat aath nau das " +
+  "gyarah barah terah chaudah pandrah solah satrah atharah unnees " +
+  "bees ikkees baaees teyees chaubees pachchees chhabbees sattaees atthaees untees " +
+  "tees iktees battees taitees chauntees paintees chhattees saintees artees untaalees " +
+  "chaalees iktaalees bayaalees taintaalees chauwaalees paintaalees chhiyaalees saintaalees artaalees unchaas " +
+  "pachaas ikyaavan baavan tirpan chauvan pachpan chhappan sattaavan atthaavan unsath " +
+  "saath iksath baasath tirsath chausath painsath chhiyaasath sarsath arsath unhattar " +
+  "sattar ikhattar bahattar tihattar chauhattar pachhattar chhihattar satattar athattar unaasi " +
+  "assi ikyaasi bayaasi tiraasi chauraasi pachaasi chhiyaasi sataasi athaasi navaasi " +
+  "nabbe ikyaanve baanve tiraanve chauraanve pachaanve chhiyaanve sattaanve atthaanve ninnaanve").split(" ");
+const SCALES: [number, string][] = [[1e9, "arab"], [1e7, "karoR"], [1e5, "lakh"], [1000, "hazaar"], [100, "sau"]];
+const D = "[0-9\\u0660-\\u0669\\u06F0-\\u06F9\\u0966-\\u096F]";
+const NUM = new RegExp(`${D}{1,3}(?:,${D}{3})+(?:\\.${D}+)?|${D}{1,2}(?:,${D}{2})+,${D}{3}(?:\\.${D}+)?|${D}+(?:\\.${D}+)?`, "g");
+
+export function numberWords(n: number): string {
+  if (n < 100) return W[n];
+  for (const [size, name] of SCALES) {
+    if (n >= size) {
+      const q = Math.floor(n / size), r = n % size;
+      return numberWords(q) + " " + name + (r ? " " + numberWords(r) : "");
+    }
+  }
+  return "";
+}
+
+function digit(c: string): string {
+  const o = c.charCodeAt(0);
+  for (const zero of [0x30, 0x660, 0x6f0, 0x966]) if (o >= zero && o < zero + 10) return String(o - zero);
+  return c;
+}
+
+export function expandNumbers(text: string): string {
+  return text.replace(NUM, (m) => {
+    const s = [...m].map(digit).join("");
+    const [wholeRaw, frac] = s.split(".");
+    const whole = wholeRaw.replaceAll(",", "");
+    let words = (whole.length > 1 && whole[0] === "0") || whole.length > 9
+      ? [...whole].map((d) => W[+d]).join(" ")
+      : numberWords(Number(whole));
+    if (frac) words += " poaint " + [...frac].map((d) => W[+d]).join(" ");
+    return " " + words + " ";
+  });
+}
+
 export class Frontend {
   ids: Map<string, number>;
   phones: Set<string>;
@@ -113,7 +159,7 @@ export class Frontend {
     }
     const result: [boolean, string | string[][]][] = [];
     let words: string[][] = [];
-    for (const token of normalizeText(text).replaceAll("-", " ").match(/[A-Za-z']+|[,.?!;:"()—…]/g) ?? []) {
+    for (const token of expandNumbers(normalizeText(text)).replaceAll("-", " ").match(/[A-Za-z']+|[,.?!;:"()—…]/g) ?? []) {
       if (isAlpha(token[0]) || token[0] === "'") {
         const phones = this.ipaWord(romanToIpa(token));
         if (phones.length) words.push(phones);

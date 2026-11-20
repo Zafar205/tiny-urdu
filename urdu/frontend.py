@@ -153,6 +153,59 @@ def roman_to_ipa(word):
     return "".join(out)
 
 
+# ---- numbers -> spoken Urdu (Roman spelling, then the normal rules) ------------------------------
+# Urdu has a distinct word for every number 0-99. NOT part of _rules_digest, so old checkpoints still load.
+_W = ("sifar ek do teen chaar paanch chhe saat aath nau das "
+      "gyarah barah terah chaudah pandrah solah satrah atharah unnees "
+      "bees ikkees baaees teyees chaubees pachchees chhabbees sattaees atthaees untees "
+      "tees iktees battees taitees chauntees paintees chhattees saintees artees untaalees "
+      "chaalees iktaalees bayaalees taintaalees chauwaalees paintaalees chhiyaalees saintaalees artaalees unchaas "
+      "pachaas ikyaavan baavan tirpan chauvan pachpan chhappan sattaavan atthaavan unsath "
+      "saath iksath baasath tirsath chausath painsath chhiyaasath sarsath arsath unhattar "
+      "sattar ikhattar bahattar tihattar chauhattar pachhattar chhihattar satattar athattar unaasi "
+      "assi ikyaasi bayaasi tiraasi chauraasi pachaasi chhiyaasi sataasi athaasi navaasi "
+      "nabbe ikyaanve baanve tiraanve chauraanve pachaanve chhiyaanve sattaanve atthaanve ninnaanve").split()
+assert len(_W) == 100
+_SCALES = ((10 ** 9, "arab"), (10 ** 7, "karoR"), (10 ** 5, "lakh"), (1000, "hazaar"), (100, "sau"))
+_D = "[0-9\\u0660-\\u0669\\u06F0-\\u06F9\\u0966-\\u096F]"
+# 1,250,000 or Pakistani grouping 10,00,000 or plain digits, each with an optional decimal part
+_NUM = re.compile(rf"{_D}{{1,3}}(?:,{_D}{{3}})+(?:\.{_D}+)?|{_D}{{1,2}}(?:,{_D}{{2}})+,{_D}{{3}}(?:\.{_D}+)?|{_D}+(?:\.{_D}+)?")
+
+
+def number_words(n):
+    if n < 100:
+        return _W[n]
+    for size, name in _SCALES:
+        if n >= size:
+            q, r = divmod(n, size)
+            return number_words(q) + " " + name + (" " + number_words(r) if r else "")
+
+
+def _digit(c):
+    o = ord(c)
+    for zero in (0x30, 0x660, 0x6F0, 0x966):
+        if zero <= o < zero + 10:
+            return str(o - zero)
+    return c
+
+
+def _say_number(m):
+    s = "".join(_digit(c) for c in m.group(0))
+    whole, _, frac = s.partition(".")
+    whole = whole.replace(",", "")
+    if (len(whole) > 1 and whole[0] == "0") or len(whole) > 9:   # phone numbers, codes: digit by digit
+        words = " ".join(_W[int(d)] for d in whole)
+    else:
+        words = number_words(int(whole))
+    if frac:
+        words += " poaint " + " ".join(_W[int(d)] for d in frac)
+    return " " + words + " "
+
+
+def expand_numbers(text):
+    return _NUM.sub(_say_number, text)
+
+
 _TOKEN = re.compile(r"[A-Za-z']+|[,.?!;:\"()—…]")
 
 
@@ -162,7 +215,7 @@ def pieces(text):
         return [(False, [[(p, 0) for p in w] for w in words])]
     from tiny_voca.text import normalize_text
     result, words = [], []
-    for token in _TOKEN.findall(normalize_text(text).replace("-", " ")):
+    for token in _TOKEN.findall(expand_numbers(normalize_text(text)).replace("-", " ")):
         if token[0].isalpha() or token[0] == "'":
             phones = _ipa_word(roman_to_ipa(token))
             if phones:
